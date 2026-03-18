@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Secrets & Sensitive Data ###
+application-secrets.properties
+application-local.properties
+.env
+.env.local
+secrets.properties
