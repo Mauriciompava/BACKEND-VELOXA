@@ -2,9 +2,10 @@ package org.cesde.velotax;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 
@@ -12,32 +13,33 @@ import javax.sql.DataSource;
 public class DatabaseConfig {
 
     @Bean
-    @ConditionalOnProperty(name = "app.database", havingValue = "sqlserver", matchIfMissing = true)
-    public DataSource dataSource(
-            @Value("${spring.datasource.sqlserver.url}") String url,
-            @Value("${spring.datasource.sqlserver.username}") String username,
-            @Value("${spring.datasource.sqlserver.password}") String password,
-            @Value("${spring.datasource.sqlserver.driver-class-name}") String driver) {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl(url);
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-        dataSource.setDriverClassName(driver);
-        return dataSource;
-    }
-
-    @Bean
-    @ConditionalOnProperty(name = "app.database", havingValue = "mysql")
+    @Primary
+    @ConditionalOnProperty(name = "app.database", havingValue = "mysql", matchIfMissing = false)
     public DataSource mysqlDataSource(
             @Value("${spring.datasource.mysql.url}") String url,
             @Value("${spring.datasource.mysql.username}") String username,
             @Value("${spring.datasource.mysql.password}") String password,
             @Value("${spring.datasource.mysql.driver-class-name}") String driver) {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl(url);
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-        dataSource.setDriverClassName(driver);
-        return dataSource;
+        return DataSourceBuilder.create()
+                .driverClassName(driver)
+                .url(url)
+                .username(username)
+                .password(password)
+                .build();
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "app.database", havingValue = "sqlserver")
+    public DataSource sqlserverDataSource(
+            @Value("${spring.datasource.sqlserver.url}") String url,
+            @Value("${spring.datasource.sqlserver.username}") String username,
+            @Value("${spring.datasource.sqlserver.password}") String password,
+            @Value("${spring.datasource.sqlserver.driver-class-name}") String driver) {
+        return DataSourceBuilder.create()
+                .driverClassName(driver)
+                .url(url)
+                .username(username)
+                .password(password)
+                .build();
     }
 }
