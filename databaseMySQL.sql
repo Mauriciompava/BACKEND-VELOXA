@@ -10,7 +10,7 @@ USE veloxa_db;
 -- TABLA: USERS (Usuarios del sistema)
 -- ============================================================================
 CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(100) NOT NULL,
@@ -29,9 +29,9 @@ CREATE TABLE users (
 -- TABLA: SHIPMENTS (Envíos)
 -- ============================================================================
 CREATE TABLE shipments (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
     tracking_number VARCHAR(20) UNIQUE NOT NULL,
-    user_id INT NOT NULL,
+    user_id BIGINT NOT NULL,
     origin VARCHAR(50) NOT NULL,
     destination VARCHAR(50) NOT NULL,
     weight DECIMAL(10,2) NOT NULL,
@@ -59,8 +59,8 @@ CREATE TABLE shipments (
 -- TABLA: SHIPMENT_TIMELINE (Historial de seguimiento)
 -- ============================================================================
 CREATE TABLE shipment_timeline (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    shipment_id INT NOT NULL,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    shipment_id BIGINT NOT NULL,
     status VARCHAR(50) NOT NULL,
     location VARCHAR(100) NOT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -74,7 +74,7 @@ CREATE TABLE shipment_timeline (
 -- TABLA: CONTACTS (Contactos/Mensajes)
 -- ============================================================================
 CREATE TABLE contacts (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
     full_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
@@ -85,7 +85,7 @@ CREATE TABLE contacts (
     ticket_number VARCHAR(20) UNIQUE NOT NULL,
     status VARCHAR(20) DEFAULT 'Nuevo',
     priority VARCHAR(20) DEFAULT 'Media',
-    assigned_to INT,
+    assigned_to BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     responded_at TIMESTAMP NULL,
@@ -100,8 +100,8 @@ CREATE TABLE contacts (
 -- TABLA: QUOTES (Cotizaciones)
 -- ============================================================================
 CREATE TABLE quotes (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT,
     origin VARCHAR(50) NOT NULL,
     destination VARCHAR(50) NOT NULL,
     weight DECIMAL(10,2) NOT NULL,
@@ -121,11 +121,11 @@ CREATE TABLE quotes (
 -- TABLA: AUDIT_LOG (Log de auditoría)
 -- ============================================================================
 CREATE TABLE audit_log (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT,
     action VARCHAR(100) NOT NULL,
     entity_type VARCHAR(50),
-    entity_id INT,
+    entity_id BIGINT,
     details JSON,
     ip_address VARCHAR(45),
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -229,4 +229,3 @@ BEGIN
     SET NEW.updated_at = CURRENT_TIMESTAMP;
 END$$
 DELIMITER ;
-
