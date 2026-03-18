@@ -36,8 +36,8 @@ public class ContactService {
                 .message(request.getMessage())
                 .category(request.getCategory())
                 .ticketNumber(ticketNumber)
-                .status("Nuevo")
-                .priority("Media")
+                .status(Contact.ContactStatus.NUEVO)
+                .priority(Contact.ContactPriority.MEDIA)
                 .build();
         
         contactRepository.save(contact);

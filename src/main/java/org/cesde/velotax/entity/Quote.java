@@ -33,8 +33,9 @@ public class Quote {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal weight;
     
-    @Column(nullable = false, length = 20)
-    private String serviceType;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "ENUM('standard', 'express', 'overnight')")
+    private QuoteServiceType serviceType;
     
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal baseCost;
@@ -57,5 +58,9 @@ public class Quote {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+    }
+    
+    public enum QuoteServiceType {
+        STANDARD, EXPRESS, OVERNIGHT
     }
 }

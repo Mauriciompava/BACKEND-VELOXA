@@ -24,8 +24,9 @@ public class ShipmentTimeline {
     @JoinColumn(name = "shipment_id", nullable = false)
     private Shipment shipment;
     
-    @Column(nullable = false, length = 50)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "ENUM('Pendiente', 'Recogido', 'En tránsito', 'En reparto', 'Entregado', 'Cancelado', 'Excepción')")
+    private TimelineStatus status;
     
     @Column(nullable = false, length = 100)
     private String location;
@@ -39,5 +40,9 @@ public class ShipmentTimeline {
     @PrePersist
     protected void onCreate() {
         timestamp = LocalDateTime.now();
+    }
+    
+    public enum TimelineStatus {
+        PENDIENTE, RECOGIDO, EN_TRANSITO, EN_REPARTO, ENTREGADO, CANCELADO, EXCEPCION
     }
 }

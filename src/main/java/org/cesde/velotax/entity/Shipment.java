@@ -5,6 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "shipments", indexes = {
@@ -31,6 +32,10 @@ public class Shipment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipient_id", nullable = false)
+    private Recipient recipient;
+    
     @Column(nullable = false, length = 50)
     private String origin;
     
@@ -38,34 +43,21 @@ public class Shipment {
     private String destination;
     
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal weight;
+    private BigDecimal totalWeight;
     
-    @Column(nullable = false, length = 20)
-    private String serviceType;
-    
-    @Column(nullable = false, length = 100)
-    private String recipientName;
-    
-    @Column(nullable = false, length = 20)
-    private String recipientPhone;
-    
-    @Column(nullable = false, length = 100)
-    private String recipientEmail;
-    
-    @Column(nullable = false, length = 255)
-    private String recipientAddress;
-    
-    @Column(columnDefinition = "TEXT")
-    private String itemsDescription;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "ENUM('standard', 'express', 'overnight')")
+    private ServiceType serviceType;
     
     @Column(precision = 12, scale = 2)
-    private BigDecimal valueDeclared;
+    private BigDecimal totalValueDeclared;
     
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private Boolean insurance = false;
     
-    @Column(nullable = false, length = 50, columnDefinition = "VARCHAR(50) DEFAULT 'Pendiente'")
-    private String status = "Pendiente";
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "ENUM('Pendiente', 'Recogido', 'En tránsito', 'En reparto', 'Entregado', 'Cancelado') DEFAULT 'Pendiente'")
+    private ShipmentStatus status = ShipmentStatus.PENDIENTE;
     
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal estimatedCost;
@@ -79,6 +71,9 @@ public class Shipment {
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
     
+    @OneToMany(mappedBy = "shipment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ShipmentItem> items;
+    
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -88,5 +83,13 @@ public class Shipment {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+    
+    public enum ServiceType {
+        STANDARD, EXPRESS, OVERNIGHT
+    }
+    
+    public enum ShipmentStatus {
+        PENDIENTE, RECOGIDO, EN_TRANSITO, EN_REPARTO, ENTREGADO, CANCELADO
     }
 }

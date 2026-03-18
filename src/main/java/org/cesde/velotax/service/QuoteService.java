@@ -43,7 +43,7 @@ public class QuoteService {
                 .origin(request.getOrigin())
                 .destination(request.getDestination())
                 .weight(request.getWeight())
-                .serviceType(request.getServiceType())
+                .serviceType(Quote.QuoteServiceType.valueOf(request.getServiceType().toUpperCase()))
                 .baseCost(baseCost)
                 .distanceFactor(distanceFactor)
                 .totalCost(totalCost)

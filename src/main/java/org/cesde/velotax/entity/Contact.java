@@ -46,11 +46,13 @@ public class Contact {
     @Column(unique = true, nullable = false, length = 20)
     private String ticketNumber;
     
-    @Column(columnDefinition = "VARCHAR(20) DEFAULT 'Nuevo'")
-    private String status = "Nuevo";
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('Nuevo', 'En proceso', 'Resuelto', 'Cerrado') DEFAULT 'Nuevo'")
+    private ContactStatus status = ContactStatus.NUEVO;
     
-    @Column(columnDefinition = "VARCHAR(20) DEFAULT 'Media'")
-    private String priority = "Media";
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('Baja', 'Media', 'Alta', 'Crítica') DEFAULT 'Media'")
+    private ContactPriority priority = ContactPriority.MEDIA;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_to")
@@ -74,5 +76,13 @@ public class Contact {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+    
+    public enum ContactStatus {
+        NUEVO, EN_PROCESO, RESUELTO, CERRADO
+    }
+    
+    public enum ContactPriority {
+        BAJA, MEDIA, ALTA, CRITICA
     }
 }

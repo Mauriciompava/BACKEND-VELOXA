@@ -22,6 +22,9 @@ public class ShipmentService {
     @Autowired
     private ShipmentTimelineRepository timelineRepository;
     
+    @Autowired
+    private RecipientRepository recipientRepository;
+    
     private static final BigDecimal COST_EXPRESS = BigDecimal.valueOf(25);
     private static final BigDecimal COST_PREMIUM = BigDecimal.valueOf(18);
     private static final BigDecimal COST_STANDARD = BigDecimal.valueOf(12);
@@ -46,22 +49,28 @@ public class ShipmentService {
         // Obtener días estimados
         String estimatedDays = getEstimatedDays(request.getServiceType());
         
+        // Crear o buscar destinatario
+        Recipient recipient = Recipient.builder()
+                .user(user)
+                .fullName(request.getRecipient())
+                .phone(request.getPhone())
+                .email(request.getEmail())
+                .address(request.getAddress())
+                .build();
+        recipientRepository.save(recipient);
+        
         // Crear envío
         Shipment shipment = Shipment.builder()
                 .trackingNumber(trackingNumber)
                 .user(user)
+                .recipient(recipient)
                 .origin(request.getOrigin())
                 .destination(request.getDestination())
-                .weight(request.getWeight())
-                .serviceType(request.getServiceType())
-                .recipientName(request.getRecipient())
-                .recipientPhone(request.getPhone())
-                .recipientEmail(request.getEmail())
-                .recipientAddress(request.getAddress())
-                .itemsDescription(request.getItems())
-                .valueDeclared(request.getValueDeclaration())
+                .totalWeight(request.getWeight())
+                .serviceType(Shipment.ServiceType.valueOf(request.getServiceType().toUpperCase()))
+                .totalValueDeclared(request.getValueDeclaration())
                 .insurance(request.getInsurance() != null && request.getInsurance())
-                .status("Pendiente")
+                .status(Shipment.ShipmentStatus.PENDIENTE)
                 .estimatedCost(estimatedCost)
                 .estimatedDeliveryDate(calculateDeliveryDate(request.getServiceType()))
                 .build();
@@ -71,7 +80,7 @@ public class ShipmentService {
         // Crear timeline inicial
         ShipmentTimeline timeline = ShipmentTimeline.builder()
                 .shipment(shipment)
-                .status("Pendiente")
+                .status(ShipmentTimeline.TimelineStatus.PENDIENTE)
                 .location("Centro de Distribución " + request.getOrigin())
                 .description("Envío registrado en el sistema")
                 .build();
@@ -96,18 +105,18 @@ public class ShipmentService {
         
         return ShipmentResponse.builder()
                 .trackingNumber(shipment.getTrackingNumber())
-                .status(shipment.getStatus())
+                .status(shipment.getStatus().toString())
                 .origin(shipment.getOrigin())
                 .destination(shipment.getDestination())
-                .recipient(shipment.getRecipientName())
+                .recipient(shipment.getRecipient().getFullName())
                 .currentLocation(timeline.isEmpty() ? shipment.getOrigin() : timeline.get(0).getLocation())
                 .estimatedDelivery(shipment.getEstimatedDeliveryDate().toString())
-                .weight(shipment.getWeight())
+                .weight(shipment.getTotalWeight())
                 .cost(shipment.getEstimatedCost())
                 .timeline(timeline.stream()
                         .map(t -> ShipmentResponse.TimelineEvent.builder()
                                 .date(t.getTimestamp())
-                                .status(t.getStatus())
+                                .status(t.getStatus().toString())
                                 .location(t.getLocation())
                                 .build())
                         .toList())
