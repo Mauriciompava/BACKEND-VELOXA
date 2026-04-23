@@ -13,12 +13,6 @@ CREATE TABLE users (
 
 CREATE TABLE shipments (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    tracking_number VARCHAR(20) UNIQUE NOT NULL,
-    origin VARCHAR(100) NOT NULL,
-    destination VARCHAR(100) NOT NULL,
-    weight DECIMAL(10,2) NOT NULL,
-    status ENUM('pending', 'in_transit', 'delivered', 'delayed', 'cancelled') DEFAULT 'pending',
-    recipient_name VARCHAR(100) NOT NULL,
     recipient_phone VARCHAR(20) NOT NULL,
     recipient_email VARCHAR(100) NOT NULL,
     recipient_address VARCHAR(255) NOT NULL,
