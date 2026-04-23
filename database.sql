@@ -31,3 +31,5 @@ CREATE TABLE shipments (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
